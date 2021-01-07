@@ -99,7 +99,7 @@ func permutationsStr(arr []string) [][]string {
 	return res
 }
 
-func minInt(a, b int) int {
+func min(a, b int) int {
 	if a > b {
 		return b
 	}
@@ -116,7 +116,7 @@ func minIntInSlice(v []int) (res int) {
 	return
 }
 
-func maxInt(a, b int) int {
+func max(a, b int) int {
 	if a < b {
 		return b
 	}
@@ -133,7 +133,7 @@ func maxIntInSlice(v []int) (res int) {
 	return
 }
 
-func absInt(a int) int {
+func abs(a int) int {
 	if a < 0 {
 		return -a
 	}
