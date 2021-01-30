@@ -140,6 +140,10 @@ func abs(a int) int {
 	return a
 }
 
+func pow(x, y int) int {
+	return int(math.Pow(float64(x), float64(y)))
+}
+
 func intSliceEq(a, b []int) bool {
 	if (a == nil) != (b == nil) {
 		return false
@@ -181,6 +185,14 @@ func gcd(a, b int) int {
 		a, b = b, a%b
 	}
 	return a
+}
+
+func gcds(a, b int, integers ...int) int {
+	res := gcd(a, b)
+	for i := 0; i < len(integers); i++ {
+		res = lcm(res, integers[i])
+	}
+	return res
 }
 
 func lcm(a, b int, integers ...int) int {
