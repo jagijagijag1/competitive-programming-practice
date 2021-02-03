@@ -195,7 +195,11 @@ func gcds(a, b int, integers ...int) int {
 	return res
 }
 
-func lcm(a, b int, integers ...int) int {
+func lcm(a, b int) int {
+	return a * b / gcd(a, b)
+}
+
+func lcms(a, b int, integers ...int) int {
 	result := a * b / gcd(a, b) // aとbの2数ならここだけ
 
 	for i := 0; i < len(integers); i++ {
