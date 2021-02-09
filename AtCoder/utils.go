@@ -190,17 +190,21 @@ func gcd(a, b int) int {
 func gcds(a, b int, integers ...int) int {
 	res := gcd(a, b)
 	for i := 0; i < len(integers); i++ {
-		res = lcm(res, integers[i])
+		res = gcd(res, integers[i])
 	}
 	return res
 }
 
+// コメント版の方がa*bで数値が大きすぎになる可能性あるっぽい
+// func lcm(a, b int) int {
+// 	return a * b / gcd(a, b)
+// }
 func lcm(a, b int) int {
-	return a * b / gcd(a, b)
+	return a / gcd(a, b) * b
 }
 
 func lcms(a, b int, integers ...int) int {
-	result := a * b / gcd(a, b) // aとbの2数ならここだけ
+	result := a * b / gcd(a, b)
 
 	for i := 0; i < len(integers); i++ {
 		result = lcm(result, integers[i])
