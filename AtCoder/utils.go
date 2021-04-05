@@ -145,6 +145,37 @@ func pow(x, y int) int {
 	return int(math.Pow(float64(x), float64(y)))
 }
 
+// a^nをpで割った余り
+func modpow(a, n, p int) int {
+	if n == 0 {
+		return 1
+	}
+	if n == 1 {
+		return a % p
+	}
+	if n%2 == 1 {
+		return (a * modpow(a, n-1, p)) % p
+	}
+	t := modpow(a, n/2, p)
+	return (t * t) % p
+}
+
+// nCaをpで割った余り (aば小さい場合に有効)
+func modchoose(n, a, p int) int {
+	x, y := 1, 1
+
+	for i := 0; i < a; i++ {
+		x *= n - i
+		x %= p
+		y *= i + 1
+		y %= p
+	}
+
+	inv := modpow(y, p-2, p)
+	res := x * inv
+	return res % p
+}
+
 func intSliceEq(a, b []int) bool {
 	if (a == nil) != (b == nil) {
 		return false
@@ -308,6 +339,18 @@ func reverse(s string) string {
 		rns[i], rns[j] = rns[j], rns[i]
 	}
 	return string(rns)
+}
+
+// nCa
+func choose(n, a int) int {
+	x, y := 1, 1
+
+	for i := 0; i <= a; i++ {
+		x *= n - i
+		y *= i + 1
+	}
+
+	return x / y
 }
 
 // from https://qiita.com/hiroykam/items/d182ae2a41dedb663380#golang
