@@ -4,35 +4,26 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strconv"
+	"regexp"
 )
 
-// func main() {
-func mainABC122B() {
+func main() {
 	sc.Split(bufio.ScanWords)
-	S := nextLine()
-	fmt.Printf("%d\n", ABC122B(S))
+	s := nextLine()
+	r := regexp.MustCompile(`[ACGT]+`)
+	matched := r.FindAllString(s, -1)
+	res := 0
+	for _, m := range matched {
+		res = max(res, len(m))
+	}
+	fmt.Println(res)
 }
 
-// ABC122B ...
-func ABC122B(T string) int {
-	cnt, max := 0, 0
-	for _, c := range T {
-		if c == 'A' || c == 'C' || c == 'G' || c == 'T' {
-			cnt++
-		} else if cnt != 0 {
-			if max < cnt {
-				max = cnt
-			}
-			cnt = 0
-		}
+func max(a, b int) int {
+	if a < b {
+		return b
 	}
-
-	if cnt != 0 && max < cnt {
-		max = cnt
-	}
-
-	return max
+	return a
 }
 
 var sc = bufio.NewScanner((os.Stdin))
@@ -42,11 +33,25 @@ func nextLine() string {
 	return sc.Text()
 }
 
-func nextInt() int {
-	l := nextLine()
-	i, e := strconv.Atoi(l)
-	if e != nil {
-		panic(e)
-	}
-	return i
-}
+// func nextInt() int {
+// 	l := nextLine()
+// 	i, e := strconv.Atoi(l)
+// 	if e != nil {
+// 		panic(e)
+// 	}
+// 	return i
+// }
+
+// const (
+// 	initialBufSize = 10000
+// 	maxBufSize     = 1000000
+// )
+
+// var (
+// 	sc *bufio.Scanner = func() *bufio.Scanner {
+// 		sc := bufio.NewScanner(os.Stdin)
+// 		buf := make([]byte, initialBufSize)
+// 		sc.Buffer(buf, maxBufSize)
+// 		return sc
+// 	}()
+// )

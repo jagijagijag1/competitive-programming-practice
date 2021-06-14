@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func main() {
 	sc.Split(bufio.ScanWords)
-	n := nextInt()
-	for i := 1; i <= 9; i++ {
-		if n%i == 0 && 1 <= n/i && n/i <= 9 {
-			fmt.Println("Yes")
-			return
-		}
+	a, b := nextInt(), nextInt()
+	as, bs := strings.Repeat(fmt.Sprint(a), b), strings.Repeat(fmt.Sprint(b), a)
+	if as < bs {
+		fmt.Println(as)
+	} else {
+		fmt.Println(bs)
 	}
-	fmt.Println("No")
 }
 
 var sc = bufio.NewScanner((os.Stdin))
