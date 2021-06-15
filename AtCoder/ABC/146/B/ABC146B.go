@@ -4,14 +4,16 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"regexp"
 	"strconv"
 )
 
 func main() {
 	sc.Split(bufio.ScanWords)
-	_, s, r := nextInt(), nextLine(), regexp.MustCompile(`ABC`)
-	fmt.Println(len(r.FindAllString(s, -1)))
+	n, s := nextInt(), nextLine()
+	for i := range s {
+		fmt.Print(string(byte(65 + (int(s[i])-65+n)%26)))
+	}
+	fmt.Println()
 }
 
 var sc = bufio.NewScanner((os.Stdin))
