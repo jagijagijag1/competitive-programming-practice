@@ -8,69 +8,50 @@ import (
 	"strconv"
 )
 
-// func main() {
-func mainABC150C() {
+func main() {
 	sc.Split(bufio.ScanWords)
-	N, P, Q := nextInt(), []int{}, []int{}
-	//P, Q = strings.Replace(P, " ", "", -1), strings.Replace(Q, " ", "", -1)
-	for i := 0; i < N; i++ {
-		P = append(P, nextInt())
+	n, narr := nextInt(), []int{}
+	for i := 0; i < n; i++ {
+		narr = append(narr, i+1)
 	}
-	for i := 0; i < N; i++ {
-		Q = append(Q, nextInt())
+	perm := permutations(narr)
+
+	p, q := []int{}, []int{}
+	for i := 0; i < n; i++ {
+		p = append(p, nextInt())
+	}
+	for i := 0; i < n; i++ {
+		q = append(q, nextInt())
 	}
 
-	fmt.Printf("%d\n", ABC150C(N, P, Q))
+	ps, qs, a, b := fmt.Sprint(p), fmt.Sprint(q), 0, 0
+	for i := 0; i < len(perm); i++ {
+		if perm[i] == ps {
+			a = i + 1
+		}
+		if perm[i] == qs {
+			b = i + 1
+		}
+	}
+	fmt.Println(abs(a - b))
 }
 
-// ABC150C ...
-func ABC150C(N int, P, Q []int) int {
-	pstr, qstr := "", ""
-	for i := range P {
-		pstr += string(P[i])
-		qstr += string(Q[i])
-	}
-
-	prem := permutations(P)
-	ppstr := []string{}
-	for i := range prem {
-		tmpp := ""
-		for j := range prem[i] {
-			tmpp += string(prem[i][j])
-		}
-		ppstr = append(ppstr, tmpp)
-	}
-
-	a, b := -1, -1
-	sort.Strings(ppstr)
-	for i := range ppstr {
-		if ppstr[i] == pstr {
-			a = i
-		}
-		if ppstr[i] == qstr {
-			b = i
-		}
-	}
-
-	return absInt(a - b)
-}
-
-func absInt(a int) int {
+func abs(a int) int {
 	if a < 0 {
 		return -a
 	}
 	return a
 }
 
-func permutations(arr []int) [][]int {
+func permutations(arr []int) []string {
 	var helper func([]int, int)
-	res := [][]int{}
+	res := []string{}
 
 	helper = func(arr []int, n int) {
 		if n == 1 {
 			tmp := make([]int, len(arr))
 			copy(tmp, arr)
-			res = append(res, tmp)
+			res = append(res, fmt.Sprint(tmp))
 		} else {
 			for i := 0; i < n; i++ {
 				helper(arr, n-1)
@@ -87,6 +68,7 @@ func permutations(arr []int) [][]int {
 		}
 	}
 	helper(arr, len(arr))
+	sort.Strings(res)
 	return res
 }
 
@@ -105,3 +87,17 @@ func nextInt() int {
 	}
 	return i
 }
+
+// const (
+// 	initialBufSize = 10000
+// 	maxBufSize     = 1000000
+// )
+
+// var (
+// 	sc *bufio.Scanner = func() *bufio.Scanner {
+// 		sc := bufio.NewScanner(os.Stdin)
+// 		buf := make([]byte, initialBufSize)
+// 		sc.Buffer(buf, maxBufSize)
+// 		return sc
+// 	}()
+// )
