@@ -7,53 +7,48 @@ import (
 	"strconv"
 )
 
-// func main() {
-func mainABC147C() {
+func main() {
 	sc.Split(bufio.ScanWords)
-	N := nextInt()
-	x, y := make([][]int, N), make([][]int, N)
-
-	for i := 0; i < N; i++ {
-		Ai := nextInt()
-		x[i], y[i] = make([]int, Ai), make([]int, Ai)
-		for j := 0; j < Ai; j++ {
-			x[i][j] = nextInt()
+	n := nextInt()
+	x, y := make([][]int, n), make([][]int, n)
+	for i := 0; i < n; i++ {
+		a := nextInt()
+		x[i], y[i] = make([]int, a), make([]int, a)
+		for j := 0; j < a; j++ {
+			x[i][j] = nextInt() - 1
 			y[i][j] = nextInt()
 		}
 	}
 
-	fmt.Printf("%d\n", ABC147C(N, x, y))
-}
-
-// ABC147C ...
-func ABC147C(N int, x, y [][]int) (res int) {
-	// 0: liar, 1: honest
-	for bit := 0; bit < (1 << N); bit++ {
-		isConsistent, tmpcnt := true, 0
-		for i := 0; i < N; i++ {
-			if bit>>uint(i)&1 == 0 {
-				continue
-			}
-			tmpcnt++
-
-			if !isConsistent {
-				continue
-			}
-
-			for j := range x[i] {
-				if bit>>uint(x[i][j]-1)&1 != y[i][j] {
-					isConsistent = false
+	res := 0
+	for bit := 0; bit < (1 << uint(n)); bit++ {
+		tmp, flag := 0, true
+		for i := 0; i < n; i++ {
+			if bit>>uint(i)&1 == 1 {
+				tmp++
+				for j := 0; j < len(x[i]); j++ {
+					if bit>>uint(x[i][j])&1 != y[i][j] {
+						flag = false
+						break
+					}
+				}
+				if flag == false {
 					break
 				}
 			}
 		}
-
-		if isConsistent && res < tmpcnt {
-			res = tmpcnt
+		if flag {
+			res = max(res, tmp)
 		}
 	}
+	fmt.Println(res)
+}
 
-	return
+func max(a, b int) int {
+	if a < b {
+		return b
+	}
+	return a
 }
 
 var sc = bufio.NewScanner((os.Stdin))
@@ -71,3 +66,17 @@ func nextInt() int {
 	}
 	return i
 }
+
+// const (
+// 	initialBufSize = 10000
+// 	maxBufSize     = 1000000
+// )
+
+// var (
+// 	sc *bufio.Scanner = func() *bufio.Scanner {
+// 		sc := bufio.NewScanner(os.Stdin)
+// 		buf := make([]byte, initialBufSize)
+// 		sc.Buffer(buf, maxBufSize)
+// 		return sc
+// 	}()
+// )
