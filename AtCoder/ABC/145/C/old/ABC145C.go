@@ -8,29 +8,45 @@ import (
 	"strconv"
 )
 
-func main() {
+// func main() {
+func mainABC145C() {
 	sc.Split(bufio.ScanWords)
-	n, arr, x, y := nextInt(), []int{}, []int{}, []int{}
-	for i := 0; i < n; i++ {
-		arr = append(arr, i)
-		x = append(x, nextInt())
-		y = append(y, nextInt())
+	N, cties := nextInt(), []Point{}
+
+	for i := 0; i < N; i++ {
+		cties = append(cties, Point{nextInt(), nextInt()})
 	}
 
-	perm := permutations(arr)
-	sum := 0.0
-	for _, p := range perm {
-		lx, ly, d := x[p[0]], y[p[0]], 0.0
-		for i := 1; i < n; i++ {
-			nx, ny := x[p[i]], y[p[i]]
-			dx, dy := nx-lx, ny-ly
-			td := math.Sqrt(float64(dx*dx) + float64(dy*dy))
-			d += td
-			lx, ly = nx, ny
-		}
-		sum += d
+	fmt.Printf("%f\n", ABC145C(N, cties))
+}
+
+// ABC145C ...
+func ABC145C(N int, cties []Point) float64 {
+	idx := []int{}
+	for i := 0; i < N; i++ {
+		idx = append(idx, i)
 	}
-	fmt.Println(sum / float64(len(perm)))
+	perm := permutations(idx)
+
+	dist := float64(0.0)
+	for _, p := range perm {
+		for i := 0; i < len(p)-1; i++ {
+			dist += pdist(cties[p[i]], cties[p[i+1]])
+		}
+	}
+
+	return dist / float64(len(perm))
+}
+
+// Point ...
+type Point struct {
+	x, y int
+}
+
+func pdist(p1, p2 Point) float64 {
+	xd := (p1.x - p2.x) * (p1.x - p2.x)
+	yd := (p1.y - p2.y) * (p1.y - p2.y)
+	return math.Sqrt(float64(xd + yd))
 }
 
 func permutations(arr []int) [][]int {
@@ -76,17 +92,3 @@ func nextInt() int {
 	}
 	return i
 }
-
-// const (
-// 	initialBufSize = 10000
-// 	maxBufSize     = 1000000
-// )
-
-// var (
-// 	sc *bufio.Scanner = func() *bufio.Scanner {
-// 		sc := bufio.NewScanner(os.Stdin)
-// 		buf := make([]byte, initialBufSize)
-// 		sc.Buffer(buf, maxBufSize)
-// 		return sc
-// 	}()
-// )
