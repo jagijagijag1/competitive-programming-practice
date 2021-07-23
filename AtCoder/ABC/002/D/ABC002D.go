@@ -7,6 +7,48 @@ import (
 	"strconv"
 )
 
+func main() {
+	sc.Split(bufio.ScanWords)
+	n, m := nextInt(), nextInt()
+	e := map[int][]int{}
+	for i := 0; i < m; i++ {
+		xx, yy := nextInt()-1, nextInt()-1
+		e[xx] = append(e[xx], yy)
+		e[yy] = append(e[yy], xx)
+	}
+
+	res := 0
+	for bit := 0; bit < (1 << uint(n)); bit++ {
+		size, valid := 0, true
+		for i := 0; i < n; i++ {
+			if bit>>uint(i)&1 == 1 {
+				size++
+			}
+			for j := i + 1; j < n; j++ {
+				if bit>>uint(i)&1 == 1 && bit>>uint(j)&1 == 1 {
+					if !contains(e[i], j) {
+						valid = false
+					}
+				}
+			}
+		}
+
+		if valid && res < size {
+			res = size
+		}
+	}
+	fmt.Println(res)
+}
+
+func contains(s []int, e int) bool {
+	for _, v := range s {
+		if e == v {
+			return true
+		}
+	}
+	return false
+}
+
 var sc = bufio.NewScanner((os.Stdin))
 
 func nextLine() string {
@@ -23,51 +65,16 @@ func nextInt() int {
 	return i
 }
 
-// func main() {
-func mainARC002D() {
-	sc.Split(bufio.ScanWords)
-	N, M := nextInt(), nextInt()
-	x, y := []int{}, []int{}
+// const (
+// 	initialBufSize = 10000
+// 	maxBufSize     = 1000000
+// )
 
-	for i := 0; i < M; i++ {
-		x = append(x, nextInt())
-		y = append(y, nextInt())
-	}
-
-	fmt.Printf("%d\n", ABC002D(N, x, y))
-}
-
-// ABC002D ...
-func ABC002D(N int, x, y []int) (res int) {
-	adj := make([][]int, N)
-	for i := 0; i < N; i++ {
-		adj[i] = make([]int, N)
-	}
-
-	for i := 0; i < len(x); i++ {
-		adj[x[i]-1][y[i]-1] = 1
-		adj[y[i]-1][x[i]-1] = 1
-	}
-
-	for bit := 0; bit < (1 << uint(N)); bit++ {
-		size, valid := 0, true
-		for i := 0; i < N; i++ {
-			if bit>>uint(i)&1 == 1 {
-				size++
-			}
-			for j := i + 1; j < N; j++ {
-				if bit>>uint(i)&1 == 1 && bit>>uint(j)&1 == 1 {
-					if adj[i][j] == 0 {
-						valid = false
-					}
-				}
-			}
-		}
-
-		if valid && res < size {
-			res = size
-		}
-	}
-
-	return
-}
+// var (
+// 	sc *bufio.Scanner = func() *bufio.Scanner {
+// 		sc := bufio.NewScanner(os.Stdin)
+// 		buf := make([]byte, initialBufSize)
+// 		sc.Buffer(buf, maxBufSize)
+// 		return sc
+// 	}()
+// )

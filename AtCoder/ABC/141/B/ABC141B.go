@@ -1,0 +1,56 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
+
+func main() {
+	sc.Split(bufio.ScanWords)
+	s := nextLine()
+	for i := range s {
+		if (i+1)%2 == 1 {
+			if s[i] == 'L' {
+				fmt.Println("No")
+				return
+			}
+		} else {
+			if s[i] == 'R' {
+				fmt.Println("No")
+				return
+			}
+		}
+	}
+	fmt.Println("Yes")
+}
+
+var sc = bufio.NewScanner((os.Stdin))
+
+func nextLine() string {
+	sc.Scan()
+	return sc.Text()
+}
+
+// func nextInt() int {
+// 	l := nextLine()
+// 	i, e := strconv.Atoi(l)
+// 	if e != nil {
+// 		panic(e)
+// 	}
+// 	return i
+// }
+
+// const (
+// 	initialBufSize = 10000
+// 	maxBufSize     = 1000000
+// )
+
+// var (
+// 	sc *bufio.Scanner = func() *bufio.Scanner {
+// 		sc := bufio.NewScanner(os.Stdin)
+// 		buf := make([]byte, initialBufSize)
+// 		sc.Buffer(buf, maxBufSize)
+// 		return sc
+// 	}()
+// )

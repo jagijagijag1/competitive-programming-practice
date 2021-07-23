@@ -377,3 +377,12 @@ func combination(n int, k int) int {
 func homogeneous(n int, k int) int {
 	return combination(n+k-1, k)
 }
+
+func contains(s []int, e int) bool {
+	for _, v := range s {
+		if e == v {
+			return true
+		}
+	}
+	return false
+}
