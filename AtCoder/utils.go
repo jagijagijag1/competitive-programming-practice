@@ -386,3 +386,22 @@ func contains(s []int, e int) bool {
 	}
 	return false
 }
+
+// 10進数のNをk進数の文字列に変換
+func convertNtoBaseK(n, k int) (res string) {
+	tmp := n
+	for digitNum := 1; ; {
+		remainder := tmp % k
+		if remainder >= 10 {
+			res = string('A'+(remainder-10)) + res
+		} else {
+			res = string('0'+remainder) + res
+		}
+		tmp = tmp / k
+		if tmp == 0 {
+			break
+		}
+		digitNum *= 10
+	}
+	return
+}
