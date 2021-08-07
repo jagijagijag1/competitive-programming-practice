@@ -7,31 +7,21 @@ import (
 	"strconv"
 )
 
-// func main() {
-func mainABC152C() {
+func main() {
 	sc.Split(bufio.ScanWords)
-	N, P := nextInt(), []int{}
-	for i := 0; i < N; i++ {
-		P = append(P, nextInt())
-	}
-
-	fmt.Printf("%d\n", ABC152C(P))
-}
-
-// ABC152C ...
-func ABC152C(P []int) (res int) {
-	min := 1000000
-	for _, p := range P {
+	n := nextInt()
+	min, res := nextInt(), 1
+	for i := 1; i < n; i++ {
+		p := nextInt()
 		if p < min {
 			res++
 			min = p
 		}
 	}
-
-	return
+	fmt.Println(res)
 }
 
-var sc = bufio.NewScanner((os.Stdin))
+// var sc = bufio.NewScanner((os.Stdin))
 
 func nextLine() string {
 	sc.Scan()
@@ -46,3 +36,17 @@ func nextInt() int {
 	}
 	return i
 }
+
+const (
+	initialBufSize = 10000
+	maxBufSize     = 1000000
+)
+
+var (
+	sc *bufio.Scanner = func() *bufio.Scanner {
+		sc := bufio.NewScanner(os.Stdin)
+		buf := make([]byte, initialBufSize)
+		sc.Buffer(buf, maxBufSize)
+		return sc
+	}()
+)
