@@ -317,7 +317,7 @@ func primeFactorization(n int) (pfs map[int]int) {
 }
 
 func divisor(n int) (res []int) {
-	for i := 1; i*i < n; i++ {
+	for i := 1; i*i <= n; i++ {
 		if n%i == 0 {
 			res = append(res, i)
 			if i*i != n {
