@@ -72,6 +72,34 @@ func permutations(arr []int) [][]int {
 	return res
 }
 
+func permutationsRune(arr []rune) []string {
+	var helper func([]rune, int)
+	res := []string{}
+
+	helper = func(arr []rune, n int) {
+		if n == 1 {
+			tmp := make([]rune, len(arr))
+			copy(tmp, arr)
+			res = append(res, string(tmp))
+		} else {
+			for i := 0; i < n; i++ {
+				helper(arr, n-1)
+				if n%2 == 1 {
+					tmp := arr[i]
+					arr[i] = arr[n-1]
+					arr[n-1] = tmp
+				} else {
+					tmp := arr[0]
+					arr[0] = arr[n-1]
+					arr[n-1] = tmp
+				}
+			}
+		}
+	}
+	helper(arr, len(arr))
+	return res
+}
+
 func permutationsStr(arr []string) [][]string {
 	var helper func([]string, int)
 	res := [][]string{}
