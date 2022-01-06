@@ -33,6 +33,15 @@ func nextUint64() uint64 {
 	return i
 }
 
+func nextFloat64() float64 {
+	l := nextLine()
+	i, e := strconv.ParseFloat(l, 64)
+	if e != nil {
+		panic(e)
+	}
+	return i
+}
+
 type stack []string
 
 func (s stack) Push(v string) stack {
