@@ -24,69 +24,74 @@ def read_input():
 
 def solve(rest_x, rest_y, dest_x, dest_y):
     """
-    今いる場所に最も近いレストランを50個貪欲に回り、
-    その後最も近い配達先を貪欲に回る
+    今いる場所に最も近いレストランまたは配達先を貪欲に回る
     ただし、候補はオフィスから距離400以下の場所のみとする
     """
     orders = []
     result_x = [CENTER]
     result_y = [CENTER]
 
-    # [NEW!] 距離の閾値
+    # 距離の閾値
     DEST_MAX = 400
 
     # 採用する注文の候補
-    candidates = []
+    candidates_rest = []
+    candidates_dest = []
 
-    # [NEW!] オフィスからの距離が閾値以内の注文のみを候補とする
     for i in range(ORDER_COUNT):
         dist_rest = dist(CENTER, CENTER, rest_x[i], rest_y[i])
         dist_dest = dist(CENTER, CENTER, dest_x[i], dest_y[i])
         if dist_rest <= DEST_MAX and dist_dest <= DEST_MAX:
-            candidates.append(i)
+            candidates_rest.append(i)
 
     current_x = CENTER
     current_y = CENTER
 
-    # 今いる場所に最も近いレストランを50個貪欲に回る
-    for _ in range(PICKUP_COUNT):
+    # [NEW!] 今いる場所に最も近いレストランまたは配達先を貪欲に回る
+    for _ in range(PICKUP_COUNT * 2):
         min_dist = 1000000007
         min_index = 998244353
+        is_restaurant = True
 
-        for i, v in enumerate(candidates):
+        # レストランを探索
+        for i, v in enumerate(candidates_rest):
             d = dist(current_x, current_y, rest_x[v], rest_y[v])
             if d < min_dist:
                 min_dist = d
                 min_index = i
+                is_restaurant = True
 
-        v = candidates[min_index]
-        orders.append(v)
-        result_x.append(rest_x[v])
-        result_y.append(rest_y[v])
-        current_x = rest_x[v]
-        current_y = rest_y[v]
-        candidates.pop(min_index)
-
-    # 行かなきゃいけない配達先（＝これまでに行ったレストラン）のリスト
-    candidates = orders.copy()
-
-    # 今いる場所に最も近い配達先を貪欲に回る
-    for _ in range(PICKUP_COUNT):
-        min_dist = 1000000007
-        min_index = 998244353
-
-        for i, v in enumerate(candidates):
+        # 配達先を探索
+        for i, v in enumerate(candidates_dest):
             d = dist(current_x, current_y, dest_x[v], dest_y[v])
             if d < min_dist:
                 min_dist = d
                 min_index = i
+                is_restaurant = False
 
-        v = candidates[min_index]
-        result_x.append(dest_x[v])
-        result_y.append(dest_y[v])
-        current_x = dest_x[v]
-        current_y = dest_y[v]
-        candidates.pop(min_index)
+        if is_restaurant:
+            # レストランに行く場合
+            v = candidates_rest[min_index]
+            x = rest_x[v]
+            y = rest_y[v]
+            orders.append(v)
+            candidates_dest.append(v)
+            if len(orders) >= PICKUP_COUNT:
+                # 50個になったらそれ以上レストランを探さない
+                candidates_rest.clear()
+            else:
+                candidates_rest.pop(min_index)
+        else:
+            # 配達先に行く場合
+            v = candidates_dest[min_index]
+            x = dest_x[v]
+            y = dest_y[v]
+            candidates_dest.pop(min_index)
+
+        result_x.append(x)
+        result_y.append(y)
+        current_x = x
+        current_y = y
 
     # 最後にオフィスに戻る
     result_x.append(CENTER)
