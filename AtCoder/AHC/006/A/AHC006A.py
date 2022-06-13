@@ -26,21 +26,30 @@ def solve(rest_x, rest_y, dest_x, dest_y):
     """
     今いる場所に最も近いレストランを50個貪欲に回り、
     その後最も近い配達先を貪欲に回る
+    ただし、候補はオフィスから距離400以下の場所のみとする
     """
     orders = []
     result_x = [CENTER]
     result_y = [CENTER]
 
-    # 採用する注文の候補（1～1000番の全てを候補とする）
-    candidates = list(range(ORDER_COUNT))
+    # [NEW!] 距離の閾値
+    DEST_MAX = 400
 
-    # 現在位置をオフィスにセット
+    # 採用する注文の候補
+    candidates = []
+
+    # [NEW!] オフィスからの距離が閾値以内の注文のみを候補とする
+    for i in range(ORDER_COUNT):
+        dist_rest = dist(CENTER, CENTER, rest_x[i], rest_y[i])
+        dist_dest = dist(CENTER, CENTER, dest_x[i], dest_y[i])
+        if dist_rest <= DEST_MAX and dist_dest <= DEST_MAX:
+            candidates.append(i)
+
     current_x = CENTER
     current_y = CENTER
 
     # 今いる場所に最も近いレストランを50個貪欲に回る
     for _ in range(PICKUP_COUNT):
-        # 候補の中から、一番近いレストランを探す
         min_dist = 1000000007
         min_index = 998244353
 
@@ -50,19 +59,12 @@ def solve(rest_x, rest_y, dest_x, dest_y):
                 min_dist = d
                 min_index = i
 
-        # レストランの注文番号
         v = candidates[min_index]
-
-        # 解を更新
         orders.append(v)
         result_x.append(rest_x[v])
         result_y.append(rest_y[v])
-
-        # 現在位置を更新
         current_x = rest_x[v]
         current_y = rest_y[v]
-
-        # 既に到着したレストランは候補から削除
         candidates.pop(min_index)
 
     # 行かなきゃいけない配達先（＝これまでに行ったレストラン）のリスト
@@ -70,7 +72,6 @@ def solve(rest_x, rest_y, dest_x, dest_y):
 
     # 今いる場所に最も近い配達先を貪欲に回る
     for _ in range(PICKUP_COUNT):
-        # まだ行っていない配達先の中から、一番近い配達先を探す
         min_dist = 1000000007
         min_index = 998244353
 
@@ -80,18 +81,11 @@ def solve(rest_x, rest_y, dest_x, dest_y):
                 min_dist = d
                 min_index = i
 
-        # 配達先の注文番号
         v = candidates[min_index]
-
-        # 解を更新
         result_x.append(dest_x[v])
         result_y.append(dest_y[v])
-
-        # 現在位置を更新
         current_x = dest_x[v]
         current_y = dest_y[v]
-
-        # 既に到着した配達先は候補から削除
         candidates.pop(min_index)
 
     # 最後にオフィスに戻る
