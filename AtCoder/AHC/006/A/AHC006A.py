@@ -25,14 +25,31 @@ def read_input():
 def solve(rest_x, rest_y, dest_x, dest_y):
     """
     今いる場所に最も近いレストランまたは配達先を貪欲に回る
-    ただし、候補はオフィスから距離400以下の場所のみとする
+    ただし、候補はオフィスに近い場所のみとする
+    オフィスからの距離の閾値は二分探索で求める
     """
     orders = []
     result_x = [CENTER]
     result_y = [CENTER]
 
-    # 距離の閾値
-    DEST_MAX = 400
+    # [NEW!] 距離の閾値を二分探索で決める
+    ok = 1000
+    ng = 0
+
+    while abs(ok - ng) > 1:
+        med = (ok + ng) // 2
+        count = 0
+        for i in range(ORDER_COUNT):
+            dist_rest = dist(CENTER, CENTER, rest_x[i], rest_y[i])
+            dist_dest = dist(CENTER, CENTER, dest_x[i], dest_y[i])
+            if dist_rest <= med and dist_dest <= med:
+                count += 1
+        if count >= PICKUP_COUNT:
+            ok = med
+        else:
+            ng = med
+
+    dest_max = ok
 
     # 採用する注文の候補
     candidates_rest = []
@@ -41,13 +58,13 @@ def solve(rest_x, rest_y, dest_x, dest_y):
     for i in range(ORDER_COUNT):
         dist_rest = dist(CENTER, CENTER, rest_x[i], rest_y[i])
         dist_dest = dist(CENTER, CENTER, dest_x[i], dest_y[i])
-        if dist_rest <= DEST_MAX and dist_dest <= DEST_MAX:
+        if dist_rest <= dest_max and dist_dest <= dest_max:
             candidates_rest.append(i)
 
     current_x = CENTER
     current_y = CENTER
 
-    # [NEW!] 今いる場所に最も近いレストランまたは配達先を貪欲に回る
+    # 今いる場所に最も近いレストランまたは配達先を貪欲に回る
     for _ in range(PICKUP_COUNT * 2):
         min_dist = 1000000007
         min_index = 998244353
