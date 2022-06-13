@@ -24,95 +24,79 @@ def read_input():
 
 def solve(rest_x, rest_y, dest_x, dest_y):
     """
-    今いる場所に最も近いレストランまたは配達先を貪欲に回る
-    ただし、候補はオフィスに近い場所のみとする
-    オフィスからの距離の閾値は二分探索で求める
+    寄り道をしたときに、
+    最も距離の増加が少ないレストラン・配達先のペアを50個選ぶ
     """
     orders = []
-    result_x = [CENTER]
-    result_y = [CENTER]
-
-    # [NEW!] 距離の閾値を二分探索で決める
-    ok = 1000
-    ng = 0
-
-    while abs(ok - ng) > 1:
-        med = (ok + ng) // 2
-        count = 0
-        for i in range(ORDER_COUNT):
-            dist_rest = dist(CENTER, CENTER, rest_x[i], rest_y[i])
-            dist_dest = dist(CENTER, CENTER, dest_x[i], dest_y[i])
-            if dist_rest <= med and dist_dest <= med:
-                count += 1
-        if count >= PICKUP_COUNT:
-            ok = med
-        else:
-            ng = med
-
-    dest_max = ok
+    result_x = [CENTER, CENTER]
+    result_y = [CENTER, CENTER]
 
     # 採用する注文の候補
-    candidates_rest = []
-    candidates_dest = []
+    candidates = list(range(ORDER_COUNT))
 
-    for i in range(ORDER_COUNT):
-        dist_rest = dist(CENTER, CENTER, rest_x[i], rest_y[i])
-        dist_dest = dist(CENTER, CENTER, dest_x[i], dest_y[i])
-        if dist_rest <= dest_max and dist_dest <= dest_max:
-            candidates_rest.append(i)
-
-    current_x = CENTER
-    current_y = CENTER
-
-    # 今いる場所に最も近いレストランまたは配達先を貪欲に回る
-    for _ in range(PICKUP_COUNT * 2):
+    # オーダーの追加を50回繰り返す
+    for _ in range(PICKUP_COUNT):
         min_dist = 1000000007
-        min_index = 998244353
-        is_restaurant = True
+        # (選んだインデックス, レストラン挿入先, 配達先挿入先)
+        min_indice = 0, 0, 0
 
-        # レストランを探索
-        for i, v in enumerate(candidates_rest):
-            d = dist(current_x, current_y, rest_x[v], rest_y[v])
-            if d < min_dist:
-                min_dist = d
-                min_index = i
-                is_restaurant = True
+        # 各オーダーについて、最適なレストラン・配達先の挿入先(j, k)を全探索
+        for i, v in enumerate(candidates):
+            x0 = rest_x[v]
+            y0 = rest_y[v]
+            x1 = dest_x[v]
+            y1 = dest_y[v]
 
-        # 配達先を探索
-        for i, v in enumerate(candidates_dest):
-            d = dist(current_x, current_y, dest_x[v], dest_y[v])
-            if d < min_dist:
-                min_dist = d
-                min_index = i
-                is_restaurant = False
+            # レストランの挿入先を探す
+            for j in range(1, len(result_x)):
+                old_dist_rest = dist(
+                    result_x[j - 1], result_y[j - 1], result_x[j], result_y[j])
+                d00 = dist(result_x[j - 1], result_y[j - 1], x0, y0)
+                d01 = dist(x0, y0, result_x[j], result_y[j])
+                new_dist_rest = d00 + d01
 
-        if is_restaurant:
-            # レストランに行く場合
-            v = candidates_rest[min_index]
-            x = rest_x[v]
-            y = rest_y[v]
-            orders.append(v)
-            candidates_dest.append(v)
-            if len(orders) >= PICKUP_COUNT:
-                # 50個になったらそれ以上レストランを探さない
-                candidates_rest.clear()
-            else:
-                candidates_rest.pop(min_index)
-        else:
-            # 配達先に行く場合
-            v = candidates_dest[min_index]
-            x = dest_x[v]
-            y = dest_y[v]
-            candidates_dest.pop(min_index)
+                # j番目にレストランを挿入したときの距離の差分
+                dist_diff_rest = new_dist_rest - old_dist_rest
 
-        result_x.append(x)
-        result_y.append(y)
-        current_x = x
-        current_y = y
+                # コーナーケースが面倒なので、一旦挿入する（後で削除）
+                result_x.insert(j, x0)
+                result_y.insert(j, y0)
 
-    # 最後にオフィスに戻る
-    result_x.append(CENTER)
-    result_y.append(CENTER)
+                # 配達先の挿入先を探す
+                for k in range(j + 1, len(result_x)):
+                    old_dist_dest = dist(
+                        result_x[k - 1], result_y[k - 1], result_x[k], result_y[k])
+                    d10 = dist(result_x[k - 1], result_y[k - 1], x1, y1)
+                    d11 = dist(x1, y1, result_x[k], result_y[k])
+                    new_dist_dest = d10 + d11
+
+                    # k番目に配達先を挿入したときの距離の差分
+                    dist_diff_dest = new_dist_dest - old_dist_dest
+
+                    # (j, k)番目にそれぞれ挿入したときの距離の差分
+                    dist_diff = dist_diff_rest + dist_diff_dest
+
+                    # 最小値の更新
+                    if dist_diff < min_dist:
+                        min_dist = dist_diff
+                        min_indice = i, j, k
+
+                # 挿入していたやつを削除
+                result_x.pop(j)
+                result_y.pop(j)
+
+        # オーダーの追加を行う
+        i, j, k = min_indice
+        v = candidates[i]
+        orders.append(v)
+        candidates.pop(i)
+
+        # 寄り道するレストラン・配達先を挿入する
+        # 挿入順を間違えるとインデックスがズレるので注意
+        result_x.insert(j, rest_x[v])
+        result_y.insert(j, rest_y[v])
+        result_x.insert(k, dest_x[v])
+        result_y.insert(k, dest_y[v])
 
     return orders, result_x, result_y
 
