@@ -27,15 +27,13 @@ func main() {
 
 	out := []int{}
 	for i := 0; i < d; i++ {
-		// fmt.Println("current seq:", out)
 		tmpscore, tmpindex := math.MinInt64, 0
 		for j := 0; j < 26; j++ {
-			tt := score(i, c, append(out, j), s)
-			// fmt.Println("  ", i, j, "next:", tt, ", tmp:", tmpscore)
+			// tt := score(i, c, append(out, j), s)
+			tt := eval(d, c, append(out, j), s, 13)
 			if tmpscore < tt {
 				tmpindex = j
 				tmpscore = tt
-				// fmt.Println("    now select", j, "with score", tt)
 			}
 		}
 		out = append(out, tmpindex)
@@ -43,6 +41,27 @@ func main() {
 	for i := range out {
 		fmt.Println(out[i] + 1)
 	}
+}
+
+func eval(D int, c, out []int, s [][]int, k int) int {
+	score := 0
+	last := make([]int, 26)
+
+	for d := range out {
+		last[out[d]] = d + 1
+		for i := range last {
+			score -= (d + 1 - last[i]) * c[i]
+		}
+		score += s[d][out[d]]
+	}
+
+	for d := len(out); d < min(len(out)+k, D); d++ {
+		for i := 0; i < 26; i++ {
+			score -= (d + 1 - last[i]) * c[i]
+		}
+	}
+
+	return score
 }
 
 func score(D int, c, out []int, s [][]int) int {
@@ -58,6 +77,13 @@ func score(D int, c, out []int, s [][]int) int {
 	}
 
 	return score
+}
+
+func min(a, b int) int {
+	if a > b {
+		return b
+	}
+	return a
 }
 
 // var sc = bufio.NewScanner((os.Stdin))
