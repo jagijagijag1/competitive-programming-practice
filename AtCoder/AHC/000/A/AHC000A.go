@@ -25,6 +25,10 @@ func main() {
 		}
 	}
 
+	solveGreedy(d, c, s)
+}
+
+func solveGreedy(d int, c []int, s [][]int) {
 	out := []int{}
 	for i := 0; i < d; i++ {
 		tmpscore, tmpindex := math.MinInt64, 0
