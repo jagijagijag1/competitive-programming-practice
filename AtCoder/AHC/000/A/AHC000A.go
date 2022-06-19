@@ -4,11 +4,17 @@ import (
 	"bufio"
 	"fmt"
 	"math"
+	"math/rand"
 	"os"
 	"strconv"
+	"time"
 )
 
+var startTime time.Time
+
 func main() {
+	startTime = time.Now()
+
 	sc.Split(bufio.ScanWords)
 	d := nextInt()
 	c, s := make([]int, 26), make([][]int, d)
@@ -25,7 +31,36 @@ func main() {
 		}
 	}
 
-	solveGreedy(d, c, s)
+	// solveGreedy(d, c, s)
+	solveHillClimbing(d, c, s)
+}
+
+func solveHillClimbing(d int, c []int, s [][]int) {
+	out := make([]int, d)
+
+	// random solution
+	rand.Seed(startTime.UnixNano())
+	for i := range out {
+		out[i] = rand.Intn(26)
+	}
+	tmpscore := score(d, c, out, s)
+
+	for time.Now().Sub(startTime).Seconds()+0.03 < 2.0 {
+		d, q := rand.Intn(d), rand.Intn(26)
+		old := out[d]
+		out[d] = q
+
+		newscore := score(d, c, out, s)
+		if newscore < tmpscore {
+			out[d] = old
+		} else {
+			tmpscore = newscore
+		}
+	}
+
+	for i := range out {
+		fmt.Println(out[i] + 1)
+	}
 }
 
 func solveGreedy(d int, c []int, s [][]int) {
