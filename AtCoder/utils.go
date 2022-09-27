@@ -314,6 +314,43 @@ func (h *float64Heap) Pop() interface{} {
 	return x
 }
 
+/*** deque ***/ // dq := Deque()
+type deque_type struct {
+	Dat []int
+	L   int
+	R   int
+}
+
+func Deque() *deque_type {
+	return &deque_type{Dat: make([]int, 200001), L: 100000, R: 100001}
+}
+func (dq *deque_type) PushBack(val int) {
+	dq.Dat[dq.R] = val
+	dq.R++
+}
+func (dq *deque_type) PushFront(val int) {
+	dq.Dat[dq.L] = val
+	dq.L--
+}
+func (dq *deque_type) RemoveBack() {
+	dq.R--
+}
+func (dq *deque_type) RemoveFront() {
+	dq.L++
+}
+func (dq *deque_type) GetBack() int {
+	return dq.Dat[dq.R-1]
+}
+func (dq *deque_type) GetFront() int {
+	return dq.Dat[dq.L+1]
+}
+func (dq *deque_type) GetIth(idx int) int {
+	return dq.Dat[dq.L+idx+1]
+}
+func (dq *deque_type) Len() int {
+	return dq.R - dq.L - 1
+}
+
 func isPrime(n int) bool {
 	for i := 2; i*i <= n; i++ {
 		if n%i == 0 {
