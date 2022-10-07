@@ -228,6 +228,11 @@ func modpow(a, n, p int) int {
 	return (t * t) % p
 }
 
+// 大きい数字に対するa/b % p
+func div(a, b, p int) int {
+	return a * modpow(b, p-2, p) % p
+}
+
 // nCaをpで割った余り (aば小さい場合に有効)
 func modchoose(n, a, p int) int {
 	x, y := 1, 1
