@@ -515,3 +515,17 @@ func convertNtoBaseK(n, k int) (res string) {
 	}
 	return
 }
+
+// 桁数: digits
+func d(N int) int {
+	return len(strconv.Itoa(N))
+}
+
+// 数字和,　各桁の和, digit sum
+func dsum(n int) (res int) {
+	for 0 < n {
+		res += n % 10
+		n /= 10
+	}
+	return
+}
