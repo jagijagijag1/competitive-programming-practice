@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"container/heap"
 	"math"
 	"os"
 	"sort"
@@ -528,4 +529,137 @@ func dsum(n int) (res int) {
 		n /= 10
 	}
 	return
+}
+
+// グラフ構造 + 探索アルゴリズム
+type Graph struct {
+	edges [][]Edge
+}
+
+type Edge struct {
+	to, weight int
+}
+
+func NewGraph(n int) *Graph {
+	return &(Graph{make([][]Edge, n)})
+}
+
+func (g *Graph) AddEdge(s, t int) {
+	g.AddWeightedEdge(s, t, 1)
+}
+
+func (g *Graph) AddWeightedEdge(s, t, w int) {
+	g.edges[s] = append(g.edges[s], Edge{t, w})
+}
+
+type DijkstraNode struct {
+	node, cost int
+}
+type DijkstraPriorityQueue []*DijkstraNode
+
+func (pq DijkstraPriorityQueue) Len() int            { return len(pq) }
+func (pq DijkstraPriorityQueue) Less(i, j int) bool  { return pq[i].cost < pq[j].cost }
+func (pq DijkstraPriorityQueue) Swap(i, j int)       { pq[i], pq[j] = pq[j], pq[i] }
+func (pq *DijkstraPriorityQueue) Push(x interface{}) { *pq = append(*pq, x.(*DijkstraNode)) }
+func (pq *DijkstraPriorityQueue) Pop() interface{} {
+	o := *pq
+	n := len(o) - 1
+	item := o[n]
+	*pq = o[0:n]
+	return item
+}
+
+// calc min cost from s to t
+func (g *Graph) dijkstra(s, t int) int {
+	n := len(g.edges)
+	pq := make(DijkstraPriorityQueue, 0)
+	cost := make([]int, n)
+	for i := 0; i < n; i++ {
+		var c int
+		if i == s {
+			c = 0
+		} else {
+			c = int(1e18)
+		}
+		cost[i] = c
+		heap.Push(&pq, &DijkstraNode{i, c})
+	}
+
+	for pq.Len() > 0 {
+		u := heap.Pop(&pq).(*DijkstraNode)
+		if u.node == t {
+			break
+		}
+		for i := 0; i < len(g.edges[u.node]); i++ {
+			v := g.edges[u.node][i]
+			c := cost[u.node] + v.weight
+			if cost[v.to] > c {
+				cost[v.to] = c
+				heap.Push(&pq, &DijkstraNode{v.to, c})
+			}
+		}
+	}
+
+	return cost[t]
+}
+
+// calc min cost from s to all nodes
+func (g *Graph) dijkstraAll(s int) []int {
+	n := len(g.edges)
+	pq := make(DijkstraPriorityQueue, 0)
+	cost := make([]int, n)
+	for i := 0; i < n; i++ {
+		var c int
+		if i == s {
+			c = 0
+		} else {
+			c = int(1e18)
+		}
+		cost[i] = c
+		heap.Push(&pq, &DijkstraNode{i, c})
+	}
+
+	for pq.Len() > 0 {
+		u := heap.Pop(&pq).(*DijkstraNode)
+		for i := 0; i < len(g.edges[u.node]); i++ {
+			v := g.edges[u.node][i]
+			c := cost[u.node] + v.weight
+			if cost[v.to] > c {
+				cost[v.to] = c
+				heap.Push(&pq, &DijkstraNode{v.to, c})
+			}
+		}
+	}
+
+	return cost
+}
+
+// calc min cost from each node to all nodes
+func (g *Graph) WarshallFloyd() [][]int {
+	n := len(g.edges)
+	d := make([][]int, n)
+	for i := 0; i < n; i++ {
+		d[i] = make([]int, n)
+		for j := 0; j < n; j++ {
+			if i == j {
+				d[i][j] = 0
+			} else {
+				d[i][j] = int(1e18)
+			}
+		}
+		for j := 0; j < len(g.edges[i]); j++ {
+			k := g.edges[i][j]
+			d[i][k.to] = k.weight
+		}
+	}
+
+	for k := 0; k < n; k++ {
+		for i := 0; i < n; i++ {
+			for j := 0; j < n; j++ {
+				d[i][j] = min(d[i][j], d[i][k]+d[k][j])
+			}
+		}
+	}
+
+	return d
 }
